@@ -1,12 +1,17 @@
 const express = require('express');
 var bodyParser = require('body-parser');
-
+const { default: mongoose } = require('mongoose');
 const route = require('./routes/route.js');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+mongoose.connect("mongodb+srv://BAravind:16mhvAqWnhmqivZs@cluster0.fq4pskd.mongodb.net/test", {
+        useNewUrlParser: true
+    })
+    .then(() => console.log("MongoDb is started"))
+    .catch(err => console.log(err))
 
 app.use('/', route);
 
