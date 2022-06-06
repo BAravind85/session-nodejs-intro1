@@ -1,8 +1,13 @@
 const express = require('express');
 const myHelper = require('../util/helper')
 const underscore = require('underscore')
+const bookModel = require('../models/UserModel')
+const controllerModel = require('../controllers/controllerModel')
 
 const router = express.Router();
+router.post('/createBook', controllerModel.CreateBook)
+router.get('/GetBookData', controllerModel.GetBookData)
+
 
 router.get('/test-me', function(req, res) {
     myHelper.printDate()
