@@ -16,6 +16,8 @@ router.post("/createBookAuth", authorController.createBookAuth)
 router.get("/allbooKs", authorController.allbooKs)
 router.post("/UpdateBooks", authorController.updateBooks)
 router.get("/Pricebook", authorController.PriceBook)
+router.get("/GetbyId", authorController.authorId)
+router.get("/olderDetails", authorController.olderThen)
 
 
 
