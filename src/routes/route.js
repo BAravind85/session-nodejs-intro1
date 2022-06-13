@@ -1,24 +1,33 @@
 const express = require('express');
 const router = express.Router();
 // const UserModel= require("../models/userModel.js")
-const UserController= require("../controllers/userController")
-const BookController= require("../controllers/bookController")
-const commonMW = require ("../middlewares/commonMiddlewares")
+const UserController = require("../controllers/userController")
+const BookController = require("../controllers/bookController")
+const commonMW = require("../middlewares/commonMiddlewares")
+const productController = require("../controllers/productController")
+const UsersController = require("../controllers/UsersController")
+const OrderController = require("../controllers/OrderController")
 
-router.get("/test-me", function (req, res) {
+router.get("/test-me", function(req, res) {
     res.send("My first ever api!")
 })
 
 
 
 
-router.post("/createBook", BookController.createBook  )
+router.post("/createBook", BookController.createBook)
 
+////////////////////////////////////
+router.post("/createProduct", productController.createProduct)
 
+router.post("/createUsers", commonMW.middleWare, UsersController.createUsers)
+
+router.post("/createOrder", commonMW.middleWare, OrderController.createOrder)
+    ////////////////////////////////////
 
 
 router.post("/createUser", UserController.createUser)
-// router.get("/getUsersData", UserController.getUsersData)
+    // router.get("/getUsersData", UserController.getUsersData)
 
 
 // const mid1= function ( req, res, next) {
@@ -48,7 +57,7 @@ router.post("/createUser", UserController.createUser)
 
 
 
-router.get("/basicRoute", commonMW.mid1, commonMW.mid2, commonMW.mid3, commonMW.mid4, UserController.basicCode)
+// router.get("/basicRoute", commonMW.mid1, commonMW.mid2, commonMW.mid3, commonMW.mid4, UserController.basicCode)
 
 
 
