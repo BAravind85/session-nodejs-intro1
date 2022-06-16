@@ -2,38 +2,48 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
 const createUser = async function(abcd, xyz) {
-
-    let data = abcd.body;
-    let savedData = await userModel.create(data);
-    xyz.send({ msg: savedData });
+    try {
+        let data = abcd.body;
+        let savedData = await userModel.create(data);
+        xyz.status(201).send({ msg: savedData });
+    } catch (err) {
+        res.status(400).send({ status: false, Error: err.message })
+    }
 };
 
 const loginUser = async function(req, res) {
-    let userName = req.body.emailId;
-    let password = req.body.password;
+    try {
+        let userName = req.body.emailId;
+        let password = req.body.password;
 
-    let user = await userModel.findOne({ emailId: userName, password: password });
-    if (!user)
-        return res.send({
-            status: false,
-            msg: "username or the password is not correct",
-        });
+        let user = await userModel.findOne({ emailId: userName, password: password });
+        if (!user)
+            return res.send({
+                status: false,
+                msg: "username or the password is not correct",
+            });
 
-    // Once the login is successful, create the jwt token with sign function
-    // Sign function has 2 inputs:
-    // Input 1 is the payload or the object containing data to be set in token
-    // The decision about what data to put in token depends on the business requirement
-    // Input 2 is the secret
-    // The same secret will be used to decode tokens
-    let token = jwt.sign({
-            userId: user._id.toString(),
-            batch: "Radon",
-            organisation: "FunctionUp",
-        },
-        "functionup-radon"
-    );
-    res.setHeader("x-auth-token", token);
-    res.send({ status: true, token: token });
+
+        // Once the login is successful, create the jwt token with sign function
+        // Sign function has 2 inputs:
+        // Input 1 is the payload or the object containing data to be set in token
+        // The decision about what data to put in token depends on the business requirement
+        // Input 2 is the secret
+        // The same secret will be used to decode tokens
+
+        let token = jwt.sign({
+                userId: user._id.toString(),
+                batch: "Radon",
+                organisation: "FunctionUp",
+            },
+            "functionup-radon"
+        );
+        res.setHeader("x-auth-token", token);
+        res.send({ status: true, token: token });
+    } catch (err) {
+        res.status(500).send({ Error: err.message })
+    }
+
 };
 
 const getUserData = async function(req, res) {
@@ -74,13 +84,22 @@ const deleteUser = async function(req, res) {
     res.send({ status: true, data: userUpdate })
 }
 const postMessage = async function(req, res) {
-        let message = req.body.message
-        let user = await userModel.findById(req.params.userId)
-        if (!user) res.send({ status: false, msg: "user id is incorrect" })
-        let updating = user.posts
-        updating.push(message)
-            //let updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, { posts: updating }, { new: true })
-        res.send({ data: user })
+        try {
+            let message = req.body.message
+            let user = await userModel.findById(req.params.userId)
+            if (!user) res.send({ status: false, msg: "user id is incorrect" })
+            let updating = user.posts
+            updating.push(message)
+            let updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, { posts: updating }, { new: true })
+            res.status(202).send({ data: updatedUser })
+        } catch (err) {
+            console.log("this is error", err.message)
+            res.status(400).send({
+                msg: "error",
+                error: err.message
+            })
+
+        }
     }
     // const postMessage = async function(req, res) {
     //     let message = req.body.message
