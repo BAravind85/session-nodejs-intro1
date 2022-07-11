@@ -25,7 +25,7 @@ const createUser = async function(req, res) {
         let data = req.body
 
         if (!isValidBody(data)) {
-            return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details" });
+            return res.status(400).send({ status: false, message: "Invalid Request Parameter, Please Provide Another Details ⚠️" });
         }
         const { title, name, phone, email, password, address } = data
 
@@ -57,13 +57,13 @@ const createUser = async function(req, res) {
         if (!isValid(password)) // --> name should be provided in the body
             return res.status(400).send({ status: false, message: "Please enter the user password. ⚠️" })
         if (!passwordRegex.test(password)) {
-            return res.status(400).send({ status: false, message: "Your password must contain atleast one number,uppercase,lowercase and special character[ @ $ ! % * ? & # ] and length should be min of 8-15 charachaters" })
+            return res.status(400).send({ status: false, message: "Your password must contain atleast one number,uppercase,lowercase and special character[ @ $ ! % * ? & # ] and length should be min of 8-15 charachaters ⚠️" })
         }
 
 
 
         //-->address validate
-        if ("address" in data && !isValid(address)) return res.status(400).send({ status: false, message: "Please enter user address" })
+        if ("address" in data && !isValid(address)) return res.status(400).send({ status: false, message: "Please enter user address ⚠️" })
 
 
 
@@ -72,9 +72,9 @@ const createUser = async function(req, res) {
         if (getBookDetails) {
 
             if (getBookDetails.phone == phone) {
-                return res.status(400).send({ status: false, msg: `${phone} email already registered ` })
+                return res.status(400).send({ status: false, msg: `${phone} email already registered ⚠️ ` })
             } else {
-                return res.status(400).send({ status: false, msg: `${email} phone number already registered` })
+                return res.status(400).send({ status: false, msg: `${email} phone number already registered ⚠️` })
             }
         }
 
@@ -98,7 +98,7 @@ const loginUser = async function(req, res) {
         if (!user)
             return res.status(400).send({
                 status: false,
-                message: "Bad Request. username or the password is not correct",
+                message: "Bad Request. username or the password is not correct ⚠️",
             });
         let token = jwt.sign({
                 userId: user._id.toString()
@@ -107,7 +107,7 @@ const loginUser = async function(req, res) {
 
         );
         res.setHeader("x-api-key", token);
-        return res.status(200).send({ status: true, message: "Login Successful", token: token });
+        return res.status(200).send({ status: true, message: "Login Successful", data: { token: token } });
     } catch (err) {
 
         return res.status(500).send({ status: false, message: err.message })
