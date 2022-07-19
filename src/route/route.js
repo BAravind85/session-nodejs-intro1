@@ -3,5 +3,10 @@ const router = express.Router();
 const UrlController= require("../Controllers/urlController");
 
 router.post("/url/shorten",UrlController.urlCreate)
+router.get("/:urlCode",UrlController.getUrl)
 
-module.exports = router
+router.all('/**', (req,res) => {
+   return res.status(404).send({status: false, message: 'No URL found'});
+})
+
+module.exports = router;

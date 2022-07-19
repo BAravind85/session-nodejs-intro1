@@ -3,59 +3,55 @@ const shortid = require("shortid");
 const validUrl = require("valid-url");
 
 
+
 const urlCreate = async function (req, res) {
-    const { longUrl } = req.body;
-  const baseUrl = "http://localhost:3001"
-
-  // Check base url
-  if (!validUrl.isUri(baseUrl)) {
-    return res.status(400).json('Invalid base url');
-  }
-
-  // Create url code
-  const urlCode = shortid.generate();
-
-  // Check long url
-  if (validUrl.isUri(longUrl)) {
-    try {
-      let url = await UrlModel.findOne({ longUrl });
-
-      if (url) {
-        res.json(url);
-      } else {
-        const shortUrl = baseUrl + '/' + urlCode;
-
-        url = new UrlModel({
-          longUrl,
-          shortUrl,
-          urlCode        
-        });
-
-        await url.save();
-
-        res.json(url);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json('Server error');
-    }
-  } else {
-    res.status(401).json('Invalid long url');
-  }
-};
-    
-const getUrl= async function (req, res){
     try{
-        let url=req.params.urlCode;
-        let findUrl=await UrlModel.findOne({url});
-        if(findUrl){
-            return res.status(400).json('Invalid URL');
-        }    
-    }catch(err){
-        return res.status(500).json('Server error');
-    }
+        let reqbody=req.body;
+    const { longUrl } = reqbody;
+
+    if(!longUrl) return res.status(400).send({status: false, message: 'Long URL is mandatory'});
+    const lUrlExists = await UrlModel.findOne({longUrl: longUrl});
+    if(lUrlExists) return res.status(400).send({status: false, message: 'You have already shorten this URL'});
+
+   
+  const baseUrl = "http://localhost:3000";
+  
+          // Check base url
+  if (!validUrl.isUri(longUrl)) {
+    return res.status(400).send('Invalid long url');
+  }
+  const url=shortid.generate();
+ const obj={
+    urlCode:url,
+    longUrl:longUrl,
+    shortUrl:baseUrl + "/" + url
+ }
+ await UrlModel.create(obj);
+
+ let getObj= await UrlModel.findOne(obj).select({urlCode: 1, shortUrl: 1, longUrl: 1, _id: 0})
+return res.status(200).send({status:true,data:getObj});
+
+}catch(err){
+    console.log(err);
+
+    return res.status(500).send({status:false,message:err.message});
+
+}
 }
 
 
+const getUrl=async function (req, res){
+    try{
+        let code=req.params.urlCode;
+        let checkUrl=await UrlModel.findOne({urlCode:code});
+        if(checkUrl){
+            return res.status(302).redirect(checkUrl.longUrl);
+            }else{
+                return res.status(404).send({status:false,message:"URL Not found"});
+            }
+    }catch(err){
+        return res.status(500).json({status:false,message:err.message})
+    }
+}
 
-module.exports = { urlCreate}
+module.exports = {urlCreate , getUrl}
